@@ -43,7 +43,6 @@ jobs:
     steps:
       - checkout
       - run: echo "Deploying..."
-    when: on_success
 
 workflows:
   version: 2
