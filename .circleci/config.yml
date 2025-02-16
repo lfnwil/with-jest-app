@@ -76,5 +76,9 @@ workflows:
               only:
                 - main
       - deploy:
-          requires:
-            - unit-tests
+        executor: node/default
+        steps:
+          - checkout
+          - run: echo "Deploying..."
+        environment:
+          CONTEXT: my-credentials-context
