@@ -8,6 +8,9 @@ jobs:
     executor: node/default
     steps:
       - checkout
+      - run:
+          name: Installation des dépendances
+          command: npm install
       - run: echo "Building things..."
 
   unit-tests:
