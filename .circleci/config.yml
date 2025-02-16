@@ -67,4 +67,36 @@ workflows:
 
   build-test-deploy:
     jobs:
-      - bui
+      - build
+      - unit-tests:
+          requires:
+            - build
+      - deploy_dev:
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy_integration:
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only:
+                - integration
+      - deploy_prod:
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only:
+                - develop
+                - main
