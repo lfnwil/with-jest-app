@@ -9,6 +9,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Vérifier les versions de Node.js et npm
+          command: |
+            node -v
+            npm -v
+      - run:
           name: Installer les dépendances
           command: npm install
       - run:
@@ -24,9 +29,10 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run:
+          name: Installer Jest JUnit pour les tests
           command: npm install jest-junit
       - run:
-          name: Run tests
+          name: Exécuter les tests
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
@@ -35,25 +41,33 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to development environment..."
+      - run:
+          name: Déployer sur l'environnement de développement
+          command: echo "Déploiement sur l'environnement de développement..."
 
   deploy_integration:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to integration environment..."
+      - run:
+          name: Déployer sur l'environnement d'intégration
+          command: echo "Déploiement sur l'environnement d'intégration..."
 
   deploy_prod:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to production environment..."
+      - run:
+          name: Déployer sur l'environnement de production
+          command: echo "Déploiement sur l'environnement de production..."
 
   deploy:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying..."
+      - run:
+          name: Déployer l'application
+          command: echo "Déploiement en cours..."
 
 workflows:
   version: 2
