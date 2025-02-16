@@ -32,6 +32,12 @@ jobs:
       - checkout
       - run: echo "Deploying to development environment..."
 
+  deploy_integration:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying to integration environment..."
+
   deploy_prod:
     executor: node/default
     steps:
@@ -50,7 +56,7 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - unit-tests: 
+      - unit-tests:
           requires:
             - build
 
@@ -67,6 +73,15 @@ workflows:
             branches:
               only:
                 - develop
+                - /^feature.*/
+                - /^hotfix.*/
+      - deploy_integration:
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only:
+                - integration
       - deploy_prod:
           requires:
             - unit-tests
