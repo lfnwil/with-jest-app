@@ -8,7 +8,12 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Building things..."
+      - run:
+          name: Installer les dépendances
+          command: npm install
+      - run:
+          name: Build du projet
+          command: npm run build
 
   unit-tests:
     executor: node/default
@@ -62,38 +67,4 @@ workflows:
 
   build-test-deploy:
     jobs:
-      - build
-      - unit-tests:
-          requires:
-            - build
-      - deploy_dev:
-          requires:
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - develop
-                - /^feature.*/
-                - /^hotfix.*/
-      - deploy_integration:
-          requires:
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - integration
-      - deploy_prod:
-          requires:
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - main
-      - deploy:
-          requires:
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - develop
-                - main
+      - bui
