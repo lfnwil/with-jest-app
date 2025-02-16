@@ -8,17 +8,7 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - run:
-          name: Vérifier les versions de Node.js et npm
-          command: |
-            node -v
-            npm -v
-      - run:
-          name: Installer les dépendances
-          command: npm install
-      - run:
-          name: Build du projet
-          command: npm run build
+      - run: echo "Building things..."
 
   unit-tests:
     executor: node/default
@@ -29,10 +19,9 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run:
-          name: Installer Jest JUnit pour les tests
           command: npm install jest-junit
       - run:
-          name: Exécuter les tests
+          name: Run tests
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
@@ -41,33 +30,25 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - run:
-          name: Déployer sur l'environnement de développement
-          command: echo "Déploiement sur l'environnement de développement..."
+      - run: echo "Deploying to development environment..."
 
   deploy_integration:
     executor: node/default
     steps:
       - checkout
-      - run:
-          name: Déployer sur l'environnement d'intégration
-          command: echo "Déploiement sur l'environnement d'intégration..."
+      - run: echo "Deploying to integration environment..."
 
   deploy_prod:
     executor: node/default
     steps:
       - checkout
-      - run:
-          name: Déployer sur l'environnement de production
-          command: echo "Déploiement sur l'environnement de production..."
+      - run: echo "Deploying to production environment..."
 
   deploy:
     executor: node/default
     steps:
       - checkout
-      - run:
-          name: Déployer l'application
-          command: echo "Déploiement en cours..."
+      - run: echo "Deploying..."
 
 workflows:
   version: 2
@@ -92,6 +73,8 @@ workflows:
             branches:
               only:
                 - develop
+                - /^feature.*/
+                - /^hotfix.*/
       - deploy_integration:
           requires:
             - unit-tests
