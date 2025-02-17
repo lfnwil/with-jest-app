@@ -46,7 +46,7 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-    coverage:
+  coverage:
     executor: node/default
     steps:
       - checkout
