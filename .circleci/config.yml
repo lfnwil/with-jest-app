@@ -224,16 +224,16 @@ workflows:
             - build
       - prepare_deployment:
           requires:
-            - accessibility-test
+            - unit-tests
       - deploy_application:
           requires:
-            - accessibility-test
+            - unit-tests
       - functional_validation_tests: 
           requires:
-            - accessibility-test
+            - unit-tests
       - deploy:
           requires:
-            - accessibility-test
+            - unit-tests
           filters:
             branches:
               only:
@@ -241,7 +241,7 @@ workflows:
                 - main
       - deploy_dev:
           requires:
-            - accessibility-test
+            - unit-tests
           filters:
             branches:
               only:
