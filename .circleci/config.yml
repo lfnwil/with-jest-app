@@ -113,7 +113,7 @@ workflows:
               only:
                 - develop
                 - /^feature.*/
-                - /^hotfix.*/
+                - /^hotfix.*/  
       - deploy_integration:
           requires:
             - coverage
