@@ -75,16 +75,23 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Vérification de la compatibilité avec différentes versions de Node.js
+          name: Install nvm and Node.js versions
           command: |
+            # Install nvm
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            source ~/.bashrc
+            # Install Node.js versions
             nvm install 14
             nvm install 16
+            # Use Node 14, install dependencies, and run tests
             nvm use 14
             npm install
             npm test
+            # Use Node 16, install dependencies, and run tests
             nvm use 16
             npm install
             npm test
+
 
   deploy_dev:
     executor: node/default
