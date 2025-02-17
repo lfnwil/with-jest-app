@@ -18,6 +18,9 @@ jobs:
           name: Cleaning
           command: rm -rf node_modules && npm cache clean --force
       - run:
+          name: Réinstallation des dépendances
+          command: npm install
+      - run:
           name: Packaging
           command: npm run build
       - run: echo "Building things..."
