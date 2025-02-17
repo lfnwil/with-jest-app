@@ -55,13 +55,12 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: npm install
+          command: npm ci  # Utilisation de npm ci pour une installation propre
       - run:
           name: Exécution des tests de régression
           command: npm run test:regression
       - store_test_results:
           path: ./test-results/
-
 
   simple-test:
     executor: node/default

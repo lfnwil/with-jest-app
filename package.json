@@ -1,14 +1,14 @@
 {
   "private": true,
-"scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "test": "jest",
-  "test:ci": "jest --ci",
-  "test:coverage": "jest --coverage",
-  "test:regression": "jest --testPathPattern=regression"
-},
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest",
+    "test:ci": "jest --ci",
+    "test:coverage": "jest --coverage",
+    "test:regression": "jest --testPathPattern=regression"
+  },
   "dependencies": {
     "next": "latest",
     "react": "^18.2.0",
