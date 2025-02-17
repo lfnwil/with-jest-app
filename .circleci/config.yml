@@ -185,20 +185,20 @@ workflows:
           requires:
             - build
       - coverage:
-            requires:
-              - unit-tests
+          requires:
+            - build
       - regression-test:
           requires:
-            - coverage
+            - build
       - security-check:
           requires:
-            - regression-test
+            - build
       - compatibility-test:
           requires:
-            - security-check
+            - build
       - accessibility-test:
           requires:
-            - compatibility-test
+            - build
 
   build-test-deploy:
     jobs:
@@ -221,32 +221,61 @@ workflows:
       - accessibility-test:
           requires:
             - build
+
       - prepare_deployment:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
       - deploy_application:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
       - functional_validation_tests: 
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
       - deploy:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
           filters:
             branches:
               only:
                 - develop
                 - main
+
       - deploy_dev:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
+
           filters:
             branches:
               only:
                 - develop
                 - /^feature.*/ 
                 - /^hotfix.*/
+
       - deploy_integration:
           requires:
             - functional_validation_tests
@@ -254,6 +283,7 @@ workflows:
             branches:
               only:
                 - integration
+
       - deploy_prod:
           requires:
             - functional_validation_tests
