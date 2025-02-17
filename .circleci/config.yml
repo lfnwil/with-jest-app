@@ -166,15 +166,15 @@ jobs:
             echo "Test de validation fonctionnelle réussi !"
 
     surveillance_et_suivi:
-    executor: node/default
-    steps:
-      - checkout
-      - run:
-          name: Surveillance et suivi du déploiement
-          command: |
-            echo "Surveillance du déploiement : Tout fonctionne correctement !"
-            # Vérification simulée pour indiquer que le déploiement est réussi
-            echo "Aucune anomalie détectée dans le processus de déploiement."
+      executor: node/default
+      steps:
+        - checkout
+        - run:
+            name: Surveillance et suivi du déploiement
+            command: |
+              echo "Surveillance du déploiement : Tout fonctionne correctement !"
+              # Vérification simulée pour indiquer que le déploiement est réussi
+              echo "Aucune anomalie détectée dans le processus de déploiement."
 
 
 workflows:
