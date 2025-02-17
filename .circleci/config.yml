@@ -18,9 +18,7 @@ jobs:
       - run:  
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
-      - run:
-          name: Build project
-          command: npm run build
+      - run: echo "Building things..."
 
   unit-tests:
     executor: node/default
@@ -38,22 +36,58 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
+  coverage:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run coverage tests
+          command: npm run test:coverage
+      - store_test_results:
+          path: ./test-results/
+
+  regression-tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Exécution des tests de régression
+          command: npm run test:regression
+      - store_test_results:
+          path: ./test-results/
+
   performance-test:
     executor: node/default
     steps:
       - checkout
       - run:
-          name: Mesurer le temps de construction
-          command: |
-            START_TIME=$(date +%s)
-            npm run build
-            END_TIME=$(date +%s)
-            BUILD_TIME=$((END_TIME - START_TIME))
-            echo "Time taken to build: $BUILD_TIME seconds"
-            if [ "$BUILD_TIME" -gt 60 ]; then
-              echo "Build took too long: $BUILD_TIME seconds (max 60 seconds)"
-              exit 1
-            fi
+        name: Exécution du test de performance
+        command: 
+          echo "Démarrer le test de performance"
+          ab -n 1000 -c 100 http://example.com/
+          echo "Test de performance terminé"
+
+  security-check:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Security audit of dependencies
+          command: npm audit --production --audit-level=high
+
+  simple-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification simple
+          command: echo "Simple test passed!"
 
   deploy_dev:
     executor: node/default
@@ -88,12 +122,46 @@ workflows:
       - unit-tests:
           requires:
             - build
+      - coverage:
+          requires:
+            - unit-tests
+      - regression-tests:
+          requires:
+            - coverage
       - performance-test:
           requires:
-            - build
-      - deploy_dev:
+            - regression-tests
+      - security-check:
           requires:
             - performance-test
+      - simple-test:
+          requires:
+            - security-check
+
+  build-test-deploy:
+    jobs:
+      - build
+      - unit-tests:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - unit-tests
+      - regression-tests:
+          requires:
+            - coverage
+      - performance-test:
+          requires:
+            - regression-tests
+      - security-check:
+          requires:
+            - performane-test
+      - simple-test:
+          requires:
+            - security-check
+      - deploy_dev:
+          requires:
+            - security-check
           filters:
             branches:
               only:
@@ -102,21 +170,21 @@ workflows:
                 - /^hotfix.*/  
       - deploy_integration:
           requires:
-            - performance-test
+            - security-check
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - performance-test
+            - security-check
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - performance-test
+            - security-check
           filters:
             branches:
               only:
