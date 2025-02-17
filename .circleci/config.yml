@@ -4,19 +4,11 @@ orbs:
   node: circleci/node@5
 
 jobs:
-<<<<<<< HEAD
   # First job declared is for building things.
-=======
->>>>>>> develop
   build:
     executor: node/default
     steps:
       - checkout
-<<<<<<< HEAD
-      - run: echo "Building things..."
-
-  # Second job declared is for launching unit tests with Jest
-=======
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
@@ -29,7 +21,6 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
->>>>>>> develop
   unit-tests:
     executor: node/default
     environment:
@@ -46,8 +37,6 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-<<<<<<< HEAD
-=======
   coverage:
     executor: node/default
     steps:
@@ -141,33 +130,26 @@ jobs:
           name: Déploiement de l'application
           command: |
             echo "Déploiement de l'application en cours..."
-            # Ajoutez les étapes de déploiement ici
             echo "Déploiement de l'application terminé."
 
->>>>>>> develop
   deploy_dev:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to development environment..."
 
-<<<<<<< HEAD
-=======
   deploy_integration:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to integration environment..."
 
->>>>>>> develop
   deploy_prod:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to production environment..."
 
-<<<<<<< HEAD
-=======
   deploy:
     executor: node/default
     steps:
@@ -191,21 +173,14 @@ jobs:
           name: Surveillance et suivi du déploiement
           command: |
             echo "Surveillance du déploiement : Tout fonctionne correctement !"
-            # Vérification simulée pour indiquer que le déploiement est réussi
             echo "Aucune anomalie détectée dans le processus de déploiement."
 
->>>>>>> develop
 workflows:
   version: 2
 
   build_and_test:
     jobs:
       - build
-<<<<<<< HEAD
-      - unit-tests: 
-          requires:
-            - build
-=======
       - unit-tests:
           requires:
             - build
@@ -224,19 +199,10 @@ workflows:
       - accessibility-test:
           requires:
             - compatibility-test
->>>>>>> develop
 
   build-test-deploy:
     jobs:
       - build
-<<<<<<< HEAD
-      - unit-tests:  # Correction ici (unit-tests au lieu de unit_tests)
-          requires:
-            - build
-      - deploy_dev:
-          requires:
-            - unit-tests
-=======
       - unit-tests:
           requires:
             - build
@@ -267,16 +233,10 @@ workflows:
       - deploy:
           requires:
             - accessibility-test
->>>>>>> develop
           filters:
             branches:
               only:
                 - develop
-<<<<<<< HEAD
-      - deploy_prod:
-          requires:
-            - unit-tests
-=======
                 - main
       - deploy_dev:
           requires:
@@ -297,15 +257,11 @@ workflows:
       - deploy_prod:
           requires:
             - functional_validation_tests
->>>>>>> develop
           filters:
             branches:
               only:
                 - main
-<<<<<<< HEAD
-=======
 
       - surveillance_et_suivi:  
           requires:
             - deploy_prod
->>>>>>> develop
