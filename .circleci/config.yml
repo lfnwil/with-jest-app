@@ -54,10 +54,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: npm install
+      - run:
           name: Exécution des tests de régression
           command: npm run test:regression
       - store_test_results:
           path: ./test-results/
+
 
   simple-test:
     executor: node/default
