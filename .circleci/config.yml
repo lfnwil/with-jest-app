@@ -4,14 +4,32 @@ orbs:
   node: circleci/node@5
 
 jobs:
+<<<<<<< HEAD
   # First job declared is for building things.
+=======
+>>>>>>> develop
   build:
     executor: node/default
     steps:
       - checkout
+<<<<<<< HEAD
       - run: echo "Building things..."
 
   # Second job declared is for launching unit tests with Jest
+=======
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run:
+          name: Installation des dépendances
+          command: npm install
+      - run:
+          name: Vérification de la syntaxe JavaScript
+          command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
+      - run: echo "Building things..."
+
+>>>>>>> develop
   unit-tests:
     executor: node/default
     environment:
@@ -28,6 +46,105 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
+<<<<<<< HEAD
+=======
+  coverage:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run coverage tests
+          command: npm run test:coverage
+      - store_test_results:
+          path: ./test-results/
+
+  regression-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Exécution des tests de régression
+          command: npm run test:regression
+      - store_test_results:
+          path: ./test-results/
+
+  security-check:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Security audit of dependencies
+          command: npm audit --production --audit-level=high
+
+  compatibility-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification de la version de Node.js
+          command: node --version
+      - run:
+          name: Installation des dépendances
+          command: npm install
+      - run:
+          name: Exécution des tests de base
+          command: npm test
+
+  accessibility-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification de l'accessibilité simple (balises alt et titres)
+          command: |
+            if [ -f "./index.html" ]; then
+              img_check=$(cat ./index.html | awk '/<img /{print $0}' | awk '!/alt="/ {print $0}')
+              if [ -n "$img_check" ]; then
+                echo "Erreur : Certaines images ne possèdent pas d'attributs 'alt'." 
+                exit 1
+              else
+                echo "Toutes les images possèdent un attribut 'alt'."
+              fi
+              h1_check=$(cat ./index.html | awk '/<h1>/{print $0}')
+              if [ -z "$h1_check" ]; then
+                echo "Erreur : Il manque la balise <h1> dans le HTML."
+                exit 1
+              else
+                echo "La balise <h1> est présente."
+              fi
+            else
+              echo "Erreur : Le fichier index.html n'existe pas."
+              exit 1
+            fi
+
+  prepare_deployment:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Préparation de l'environnement de déploiement
+          command: |
+            echo "Préparation de l'environnement de déploiement..."
+            echo "Configuration de l'environnement de déploiement terminée."
+
+  deploy_application:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Déploiement de l'application
+          command: |
+            echo "Déploiement de l'application en cours..."
+            # Ajoutez les étapes de déploiement ici
+            echo "Déploiement de l'application terminé."
+
+>>>>>>> develop
   deploy_dev:
     executor: node/default
     steps:
@@ -46,27 +163,111 @@ workflows:
   build_and_test:
     jobs:
       - build
+<<<<<<< HEAD
       - unit-tests: 
           requires:
             - build
+=======
+      - unit-tests:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - unit-tests
+      - regression-test:
+          requires:
+            - coverage
+      - security-check:
+          requires:
+            - regression-test
+      - compatibility-test:
+          requires:
+            - security-check
+      - accessibility-test:
+          requires:
+            - compatibility-test
+>>>>>>> develop
 
   build-test-deploy:
     jobs:
       - build
+<<<<<<< HEAD
       - unit-tests:  # Correction ici (unit-tests au lieu de unit_tests)
           requires:
             - build
       - deploy_dev:
           requires:
             - unit-tests
+=======
+      - unit-tests:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - build
+      - regression-test:
+          requires:
+            - build
+      - security-check:
+          requires:
+            - build
+      - compatibility-test:
+          requires:
+            - build
+      - accessibility-test:
+          requires:
+            - build
+      - prepare_deployment:
+          requires:
+            - accessibility-test
+      - deploy_application:
+          requires:
+            - accessibility-test
+      - functional_validation_tests: 
+          requires:
+            - accessibility-test
+      - deploy:
+          requires:
+            - accessibility-test
+>>>>>>> develop
           filters:
             branches:
               only:
                 - develop
+<<<<<<< HEAD
       - deploy_prod:
           requires:
             - unit-tests
+=======
+                - main
+      - deploy_dev:
+          requires:
+            - accessibility-test
+          filters:
+            branches:
+              only:
+                - develop
+                - /^feature.*/ 
+                - /^hotfix.*/
+      - deploy_integration:
+          requires:
+            - functional_validation_tests
+          filters:
+            branches:
+              only:
+                - integration
+      - deploy_prod:
+          requires:
+            - functional_validation_tests
+>>>>>>> develop
           filters:
             branches:
               only:
                 - main
+<<<<<<< HEAD
+=======
+
+      - surveillance_et_suivi:  
+          requires:
+            - deploy_prod
+>>>>>>> develop
