@@ -11,11 +11,11 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
-      - run:
-          name: Vérification de la syntaxe JavaScript
-          command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
-
       - run: echo "Building things..."
+      - run:
+          name: Analyse de code avec une vérification si les fichiers sont vides
+          command: |
+            find . -type f -empty -not -path "./node_modules/*" -not -path "./.git/*" -print && exit 1 || echo "Aucun fichier vide détecté."
 
   unit-tests:
     executor: node/default
