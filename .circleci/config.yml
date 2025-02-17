@@ -209,45 +209,62 @@ workflows:
             - build
       - coverage:
           requires:
-            - build
+            - unit-tests
       - regression-test:
           requires:
-            - build
+            - coverage
       - security-check:
           requires:
-            - build
+            - regression-test
       - compatibility-test:
           requires:
-            - build
+            - security-check
       - accessibility-test:
           requires:
-            - build
+            - compatibility-test
+
       - prepare_deployment:
           requires:
-            - unit-tests
+            - accessibility-test
+
       - deploy_application:
           requires:
-            - unit-tests
+            - accessibility-test
+
       - functional_validation_tests: 
           requires:
-            - unit-tests
+            - accessibility-test
+
       - deploy:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
           filters:
             branches:
               only:
                 - develop
                 - main
+
       - deploy_dev:
           requires:
+            - accessibility-test
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
             - unit-tests
+
           filters:
             branches:
               only:
                 - develop
                 - /^feature.*/ 
                 - /^hotfix.*/
+
       - deploy_integration:
           requires:
             - functional_validation_tests
@@ -255,6 +272,7 @@ workflows:
             branches:
               only:
                 - integration
+
       - deploy_prod:
           requires:
             - functional_validation_tests
