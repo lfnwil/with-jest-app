@@ -35,6 +35,10 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
+      - run:
+          name: Compatibility Test
+          command: npx check-package-compat  # Outil de test de compatibilité
+          # Remplacer par l'outil que tu utilises si nécessaire.
 
   coverage:
     executor: node/default
