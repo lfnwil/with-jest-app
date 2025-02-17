@@ -11,6 +11,9 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
+      - run:
+          name: Vérification de la syntaxe JavaScript
+          command: find . -name "*.js" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
   unit-tests:
