@@ -67,11 +67,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Exécution du test de performance
-          command: |
-            echo "Démarrer le test de performance"
-            ab -n 1000 -c 100 http://example.com/
-            echo "Test de performance terminé"
+          name: Install Apache Bench (ab)
+        command: |
+          sudo apt-get update
+          sudo apt-get install -y apache2-utils
+      - run:
+        name: Exécution du test de performance
+        command: |
+          echo "Démarrer le test de performance"
+          ab -n 1000 -c 100 http://example.com/
+          echo "Test de performance terminé"
 
   security-check:
     executor: node/default
