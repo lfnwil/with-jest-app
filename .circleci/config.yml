@@ -16,20 +16,6 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
-  clean_and_package:
-    executor: node/default
-    steps:
-      - checkout
-      - run:
-          name: Nettoyage des fichiers générés
-          command: rm -rf dist/*
-      - run:
-          name: Création du package
-          command: npm run build
-      - run:
-          name: Vérification du package
-          command: ls -lh dist/
-
   unit-tests:
     executor: node/default
     environment:
@@ -97,9 +83,6 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - clean_and_package:
-          requires:
-            - build
       - unit-tests:
           requires:
             - build
@@ -113,9 +96,6 @@ workflows:
   build-test-deploy:
     jobs:
       - build
-      - clean_and_package:
-          requires:
-            - build
       - unit-tests:
           requires:
             - build
@@ -124,7 +104,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage 
+            - coverage
       - deploy_dev:
           requires:
             - coverage
@@ -132,8 +112,8 @@ workflows:
             branches:
               only:
                 - develop
-                - /^feature.*/ 
-                - /^hotfix.*/ 
+                - /^feature.*/
+                - /^hotfix.*/
       - deploy_integration:
           requires:
             - coverage
