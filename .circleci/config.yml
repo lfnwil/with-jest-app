@@ -220,6 +220,14 @@ workflows:
       - functional_validation_tests: 
           requires:
             - accessibility-test
+      - deploy:
+          requires:
+            - accessibility-test
+          filters:
+            branches:
+              only:
+                - develop
+                - main
       - deploy_dev:
           requires:
             - functional_validation_tests
@@ -242,12 +250,4 @@ workflows:
           filters:
             branches:
               only:
-                - main
-      - deploy:
-          requires:
-            - functional_validation_tests
-          filters:
-            branches:
-              only:
-                - develop
                 - main
