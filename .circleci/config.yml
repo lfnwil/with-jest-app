@@ -16,11 +16,14 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
       - run:
-        name: Cleaning et Packaging
+        name: Cleaning
         command: |
-          echo "Suppression des fichiers temporaires..."
+          echo "🧹 Suppression des fichiers temporaires..."
           rm -rf ./tmp/*
-          echo "Création du package..."
+      - run:
+        name: Packaging
+        command: |
+          echo "📦 Création du package..."
           tar -czf build-package.tar.gz ./dist
 
   unit-tests:
