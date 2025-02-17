@@ -199,7 +199,7 @@ workflows:
                 - main
       - deploy:
           requires:
-            - accessibility-test
+            - accessibility-test, compatibility-test, coverage, regression-test, security-check, unit-tests
           filters:
             branches:
               only:
