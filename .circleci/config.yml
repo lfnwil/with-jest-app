@@ -95,7 +95,7 @@ jobs:
               # Vérifier la présence de balises <img> avec un attribut alt
               img_check=$(cat ./index.html | awk '/<img /{print $0}' | awk '!/alt="/ {print $0}')
               if [ -n "$img_check" ]; then
-                echo "Erreur : Certaines images ne possèdent pas d'attributs 'alt'."
+                echo "Erreur : Certaines images ne possèdent pas d'attributs 'alt'." 
                 exit 1
               else
                 echo "Toutes les images possèdent un attribut 'alt'."
@@ -113,7 +113,19 @@ jobs:
               echo "Erreur : Le fichier index.html n'existe pas."
               exit 1
             fi
-            
+
+  prepare_deployment:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Préparation de l'environnement de déploiement
+          command: |
+            echo "Préparation de l'environnement de déploiement..."
+            # Ajouter ici les étapes nécessaires pour préparer l'environnement de déploiement
+            # Par exemple, la mise à jour des configurations, la création des répertoires nécessaires, etc.
+            echo "Configuration de l'environnement de déploiement terminée."
+
   deploy_dev:
     executor: node/default
     steps:
@@ -184,32 +196,35 @@ workflows:
       - accessibility-test:
           requires:
             - build
-      - deploy_dev:
+      - prepare_deployment:  # Le job de préparation est ajouté ici
           requires:
             - accessibility-test
+      - deploy_dev:
+          requires:
+            - prepare_deployment
           filters:
             branches:
               only:
                 - develop
-                - /^feature.*/ 
-                - /^hotfix.*/  
+                - /^feature.*/
+                - /^hotfix.*/
       - deploy_integration:
           requires:
-            - accessibility-test
+            - prepare_deployment
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - accessibility-test
+            - prepare_deployment
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - accessibility-test
+            - prepare_deployment
           filters:
             branches:
               only:
