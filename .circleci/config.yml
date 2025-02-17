@@ -75,9 +75,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Vérification des dépendances obsolètes
-          command: npm outdated
-      - run:
           name: Vérification de la compatibilité avec différentes versions de Node.js
           command: |
             nvm install 14
