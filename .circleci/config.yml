@@ -16,7 +16,7 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
-  clean_and_package:
+    clean_and_package:
     executor: node/default
     steps:
       - checkout
@@ -24,11 +24,18 @@ jobs:
           name: Nettoyage des fichiers générés
           command: rm -rf dist/*
       - run:
+          name: Installation des dépendances
+          command: npm install
+      - run:
+          name: Vérifier l'installation de Next.js
+          command: npx next --version 
+      - run:
           name: Création du package
           command: npm run build
       - run:
           name: Vérification du package
           command: ls -lh dist/
+
 
   unit-tests:
     executor: node/default
