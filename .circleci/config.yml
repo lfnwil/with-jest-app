@@ -129,7 +129,7 @@ jobs:
           name: Déploiement de l'application
           command: |
             echo "Déploiement de l'application en cours..."
-            # Ici, ajoutez vos étapes de déploiement (par exemple, via une API ou un service cloud)
+            # Ajoutez les étapes de déploiement ici
             echo "Déploiement de l'application terminé."
 
   deploy_dev:
@@ -156,20 +156,21 @@ jobs:
       - checkout
       - run: echo "Deploying..."
 
-  verification_tests:
+  functional_validation_tests:
     executor: node/default
     steps:
       - checkout
       - run:
-          name: Vérification simple
+          name: Validation fonctionnelle simple
           command: |
-            echo "Vérification simple en cours..."
-            # Vous pouvez ajouter des tests très simples, comme vérifier qu'un fichier existe ou une URL répond.
-            # Exemple de vérification : vérifier qu'un fichier index.html est présent
-            if [ -f "./index.html" ]; then
-              echo "Fichier index.html trouvé."
+            echo "Lancement des tests de validation fonctionnelle..."
+            # Exemple de test fonctionnel simple : vérifier si une URL répond
+            curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 > response_code.txt
+            response_code=$(cat response_code.txt)
+            if [ "$response_code" -eq 200 ]; then
+              echo "Test fonctionnel réussi : la page répond avec le code 200."
             else
-              echo "Erreur : Fichier index.html manquant."
+              echo "Test fonctionnel échoué : la page ne répond pas avec le code 200."
               exit 1
             fi
 
@@ -219,18 +220,18 @@ workflows:
       - accessibility-test:
           requires:
             - build
-      - prepare_deployment:  
+      - prepare_deployment:
           requires:
             - accessibility-test
-      - deploy_application:  
+      - deploy_application:
           requires:
             - accessibility-test
-      - verification_tests:  # Ajout du job de vérification avant le déploiement
+      - functional_validation_tests: 
           requires:
-            - deploy_application
+            - daccessibility-test
       - deploy_dev:
           requires:
-            - verification_tests
+            - functional_validation_tests
           filters:
             branches:
               only:
@@ -239,21 +240,21 @@ workflows:
                 - /^hotfix.*/
       - deploy_integration:
           requires:
-            - verification_tests
+            - functional_validation_tests
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - verification_tests
+            - functional_validation_tests
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - verification_tests
+            - functional_validation_tests
           filters:
             branches:
               only:
