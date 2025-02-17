@@ -59,6 +59,14 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
+  simple-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification simple
+          command: echo "Simple test passed!"
+
   deploy_dev:
     executor: node/default
     steps:
@@ -98,6 +106,9 @@ workflows:
       - coverage:
           requires:
             - unit-tests
+      - simple-test:
+          requires:
+            - coverage  # Le simple-test dépend de la couverture
 
   build-test-deploy:
     jobs:
@@ -111,6 +122,9 @@ workflows:
       - coverage:
           requires:
             - unit-tests
+      - simple-test:
+          requires:
+            - coverage
       - deploy_dev:
           requires:
             - coverage
