@@ -10,6 +10,9 @@ jobs:
       - checkout
       - run:
           name: Installation des dépendances
+          command: npm install --no-cache
+      - run:
+          name: Installation des dépendances
           command: npm install
       - run:
           name: Vérification de la syntaxe JavaScript
