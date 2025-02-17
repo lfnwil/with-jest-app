@@ -15,6 +15,13 @@ jobs:
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
+      - run:
+        name: Cleaning et Packaging
+        command: |
+          echo "Suppression des fichiers temporaires..."
+          rm -rf ./tmp/*
+          echo "Création du package..."
+          tar -czf build-package.tar.gz ./dist
 
   unit-tests:
     executor: node/default
