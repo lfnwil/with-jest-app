@@ -108,7 +108,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage  # Le simple-test dépend de la couverture
+            - coverage
 
   build-test-deploy:
     jobs:
@@ -124,7 +124,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage  # Le simple-test dépend de la couverture
+            - coverage 
       - deploy_dev:
           requires:
             - coverage
