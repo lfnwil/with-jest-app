@@ -209,32 +209,44 @@ workflows:
             - build
       - coverage:
           requires:
-            - unit-tests
+            - build
       - regression-test:
           requires:
-            - coverage
+            - build
       - security-check:
           requires:
-            - regression-test
+            - build
       - compatibility-test:
           requires:
-            - security-check
+            - build
       - accessibility-test:
           requires:
-            - compatibility-test
+            - build
 
       - prepare_deployment:
           requires:
             - accessibility-test
-
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
+            - unit-tests
       - deploy_application:
           requires:
             - accessibility-test
-
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
+            - unit-tests
       - functional_validation_tests: 
           requires:
             - accessibility-test
-
+            - security-check
+            - regression-test
+            - compatibility-test
+            - coverage
+            - unit-tests
       - deploy:
           requires:
             - accessibility-test
