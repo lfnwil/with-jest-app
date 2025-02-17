@@ -11,15 +11,23 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
-      - run:  
+      - run:
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run:
-          name: Nettoyage et packaging
+          name: Nettoyage des fichiers temporaires
+          command: npm run clean
+      - run:
+          name: Construction du projet
+          command: npm run build
+      - run:
+          name: Packaging
           command: |
-            npm run clean
-            npm run package
-      - run: echo "Building things..."
+            if [ -d "dist" ]; then
+              tar -czf dist.tar.gz dist
+            else
+              echo "Le répertoire dist n'existe pas, aucun packaging effectué."
+            fi
 
   unit-tests:
     executor: node/default
