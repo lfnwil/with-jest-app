@@ -71,12 +71,12 @@ jobs:
           command: npm audit --production --audit-level=high
 
   compatibility-test:
-  executor: node/default
-  steps:
-    - checkout
-    - run:
-        name: Vérification des dépendances obsolètes
-        command: npm outdated
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification des dépendances obsolètes
+          command: npm outdated
 
 
   simple-test:
