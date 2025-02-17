@@ -16,7 +16,7 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
-    clean_and_package:
+  clean_and_package:
     executor: node/default
     steps:
       - checkout
@@ -35,7 +35,6 @@ jobs:
       - run:
           name: Vérification du package
           command: ls -lh dist/
-
 
   unit-tests:
     executor: node/default
