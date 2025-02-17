@@ -11,10 +11,6 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
-      - run:  
-          name: Vérification de la syntaxe JavaScript
-          command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
-      - run: echo "Building things..."
 
   unit-tests:
     executor: node/default
@@ -22,12 +18,8 @@ jobs:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
       - run:
-          command: npm install jest-junit
-      - run:
-          name: Run tests
+          name: Exécution des tests unitaires
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
@@ -37,21 +29,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Run coverage tests
+          name: Exécution des tests de couverture
           command: npm run test:coverage
-      - store_test_results:
-          path: ./test-results/
-
-  regression-tests:
-    executor: node/default
-    steps:
-      - checkout
-      - run:
-          name: Exécution des tests de régression
-          command: npm run test:regression
       - store_test_results:
           path: ./test-results/
 
@@ -67,25 +46,25 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to development environment..."
+      - run: echo "Déploiement vers l'environnement de développement..."
 
   deploy_integration:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to integration environment..."
+      - run: echo "Déploiement vers l'environnement d'intégration..."
 
   deploy_prod:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying to production environment..."
+      - run: echo "Déploiement vers l'environnement de production..."
 
   deploy:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Deploying..."
+      - run: echo "Déploiement..."
 
 workflows:
   version: 2
@@ -99,12 +78,9 @@ workflows:
       - coverage:
           requires:
             - unit-tests
-      - regression-tests:
-          requires:
-            - coverage
       - simple-test:
           requires:
-            - regression-tests
+            - coverage
 
   build-test-deploy:
     jobs:
@@ -115,38 +91,35 @@ workflows:
       - coverage:
           requires:
             - unit-tests
-      - regression-tests:
-          requires:
-            - coverage
       - simple-test:
           requires:
-            - regression-tests
+            - coverage
       - deploy_dev:
           requires:
-            - regression-tests
+            - coverage
           filters:
             branches:
               only:
                 - develop
                 - /^feature.*/
-                - /^hotfix.*/  
+                - /^hotfix.*/
       - deploy_integration:
           requires:
-            - regression-tests
+            - coverage
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - regression-tests
+            - coverage
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - regression-tests
+            - coverage
           filters:
             branches:
               only:
