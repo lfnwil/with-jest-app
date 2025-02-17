@@ -15,14 +15,10 @@ jobs:
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run:
-          name: Cleaning
-          command: rm -rf node_modules && npm cache clean --force
-      - run:
-          name: Réinstallation des dépendances
-          command: npm install
-      - run:
-          name: Packaging
-          command: npm run build
+          name: Nettoyage et packaging
+          command: |
+            npm run clean
+            npm run package
       - run: echo "Building things..."
 
   unit-tests:
@@ -88,7 +84,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /^feature.*/
+                - /^feature.*/ 
                 - /^hotfix.*/
       - deploy_integration:
           requires:
