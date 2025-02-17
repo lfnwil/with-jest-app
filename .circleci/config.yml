@@ -18,12 +18,12 @@ jobs:
       - run:
         name: Cleaning
         command: |
-          echo "🧹 Suppression des fichiers temporaires..."
+          echo "Suppression des fichiers temporaires..."
           rm -rf ./tmp/*
       - run:
         name: Packaging
         command: |
-          echo "📦 Création du package..."
+          echo "Création du package..."
           tar -czf build-package.tar.gz ./dist
 
   unit-tests:
