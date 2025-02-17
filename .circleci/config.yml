@@ -71,13 +71,13 @@ jobs:
           command: npm audit --production --audit-level=high
 
   compatibility-test:
-    executor: node/default
-    steps:
-      - checkout
-      - run:
-          name: Test de compatibilité des dépendances
-          command: npx check-package-compat  # Exemple de commande pour tester la compatibilité
-          # Remplacer par l'outil que tu utilises pour tester la compatibilité des versions.
+  executor: node/default
+  steps:
+    - checkout
+    - run:
+        name: Vérification des dépendances obsolètes
+        command: npm outdated
+
 
   simple-test:
     executor: node/default
@@ -131,7 +131,7 @@ workflows:
             - regression-tests
       - compatibility-test:
           requires:
-            - security-check  # Le test de compatibilité vient après la vérification de sécurité
+            - security-check
       - simple-test:
           requires:
             - compatibility-test
