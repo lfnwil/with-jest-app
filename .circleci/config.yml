@@ -49,7 +49,7 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-  regression-tests:
+  regression-test:
     executor: node/default
     steps:
       - checkout
@@ -84,6 +84,26 @@ jobs:
           name: Exécution des tests de base
           command: npm test
 
+    accessibility-test:
+      executor: node/default
+      steps:
+        - checkout
+        - run:
+          name: Vérification de l'accessibilité (balises alt et titres)
+          command: |
+            if grep -q '<img ' ./index.html && ! grep -q 'alt="' ./index.html; then
+              echo "Erreur : Certaines images ne possèdent pas d'attributs 'alt'."
+              exit 1
+            else
+              echo "Toutes les images possèdent un attribut 'alt'."
+            fi
+            if ! grep -q '<h1>' ./index.html || ! grep -q '<h2>' ./index.html; then
+              echo "Erreur : <h1> et/ou <h2> manquent dans le HTML."
+              exit 1
+            else
+              echo "Les balises <h1> et <h2> sont présentes."
+            fi
+            
   deploy_dev:
     executor: node/default
     steps:
@@ -120,12 +140,12 @@ workflows:
       - coverage:
           requires:
             - unit-tests
-      - regression-tests:
+      - regression-test:
           requires:
             - coverage
       - security-check:
           requires:
-            - regression-tests
+            - regression-test
       - compatibility-test:
           requires:
             - security-check
@@ -139,7 +159,7 @@ workflows:
       - coverage:
           requires:
             - build
-      - regression-tests:
+      - regression-test:
           requires:
             - build
       - security-check:
@@ -173,7 +193,7 @@ workflows:
                 - main
       - deploy:
           requires:
-            - compatibility-test
+            - compatibility-test, coverage, security-check, regression-test, unit-tests, accessibility-test
           filters:
             branches:
               only:
