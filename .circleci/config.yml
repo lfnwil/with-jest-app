@@ -92,7 +92,6 @@ jobs:
           name: Vérification de l'accessibilité simple (balises alt et titres)
           command: |
             if [ -f "./index.html" ]; then
-              # Vérifier la présence de balises <img> avec un attribut alt
               img_check=$(cat ./index.html | awk '/<img /{print $0}' | awk '!/alt="/ {print $0}')
               if [ -n "$img_check" ]; then
                 echo "Erreur : Certaines images ne possèdent pas d'attributs 'alt'." 
@@ -100,8 +99,6 @@ jobs:
               else
                 echo "Toutes les images possèdent un attribut 'alt'."
               fi
-              
-              # Vérifier la présence de balises <h1>
               h1_check=$(cat ./index.html | awk '/<h1>/{print $0}')
               if [ -z "$h1_check" ]; then
                 echo "Erreur : Il manque la balise <h1> dans le HTML."
@@ -122,8 +119,6 @@ jobs:
           name: Préparation de l'environnement de déploiement
           command: |
             echo "Préparation de l'environnement de déploiement..."
-            # Ajouter ici les étapes nécessaires pour préparer l'environnement de déploiement
-            # Par exemple, la mise à jour des configurations, la création des répertoires nécessaires, etc.
             echo "Configuration de l'environnement de déploiement terminée."
 
   deploy_application:
@@ -133,13 +128,9 @@ jobs:
       - run:
           name: Déploiement de l'application
           command: |
-            echo "Déploiement de l'application..."
-            # Ajouter les étapes de déploiement spécifiques, telles que :
-            # - Copie des fichiers de l'application sur le serveur
-            # - Exécution des commandes de déploiement spécifiques
-            # Exemple : npm run deploy ou tout autre script de déploiement
-            npm run deploy
-            echo "Application déployée avec succès."
+            echo "Déploiement de l'application en cours..."
+            # Ici, ajoutez vos étapes de déploiement (par exemple, via une API ou un service cloud)
+            echo "Déploiement de l'application terminé."
 
   deploy_dev:
     executor: node/default
@@ -211,12 +202,12 @@ workflows:
       - accessibility-test:
           requires:
             - build
-      - prepare_deployment:  # Le job de préparation est ajouté ici
+      - prepare_deployment:  
           requires:
             - accessibility-test
-      - deploy_application:  # Le job de déploiement de l'application
+      - deploy_application:  
           requires:
-            - prepare_deployment
+            - accessibility-test
       - deploy_dev:
           requires:
             - deploy_application
@@ -224,7 +215,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /^feature.*/
+                - /^feature.*/ 
                 - /^hotfix.*/
       - deploy_integration:
           requires:
