@@ -45,6 +45,16 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
+  regression-tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Exécution des tests de régression
+          command: npm run test:regression
+      - store_test_results:
+          path: ./test-results/
+
   simple-test:
     executor: node/default
     steps:
@@ -89,9 +99,12 @@ workflows:
       - coverage:
           requires:
             - unit-tests
-      - simple-test:
+      - regression-tests:
           requires:
             - coverage
+      - simple-test:
+          requires:
+            - regression-tests
 
   build-test-deploy:
     jobs:
@@ -102,12 +115,15 @@ workflows:
       - coverage:
           requires:
             - unit-tests
+      - regression-tests:
+          requires:
+            - coverage
       - simple-test:
           requires:
-            - coverage
+            - regression-tests
       - deploy_dev:
           requires:
-            - coverage
+            - regression-tests
           filters:
             branches:
               only:
@@ -116,21 +132,21 @@ workflows:
                 - /^hotfix.*/  
       - deploy_integration:
           requires:
-            - coverage
+            - regression-tests
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - coverage
+            - regression-tests
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - coverage
+            - regression-tests
           filters:
             branches:
               only:
