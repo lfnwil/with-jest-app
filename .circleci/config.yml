@@ -68,7 +68,6 @@ jobs:
           name: Test de performance simple
           command: |
             echo "Lancement du test de performance..."
-            # Exemple d'un test simple mesurant le temps d'exécution d'une tâche spécifique
             time npm run some-performance-task
 
   simple-test:
