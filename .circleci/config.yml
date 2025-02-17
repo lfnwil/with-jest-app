@@ -1,5 +1,6 @@
 orbs:
   node: circleci/node@5
+  lighthouse: circleci/lighthouse@0.0.2  # Ajout de l'orbe Lighthouse pour les tests de performance
 
 jobs:
   build:
@@ -60,15 +61,19 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-  performance-test:
+  performance-test:  # Ajout du job de test de performance
     executor: node/default
     steps:
       - checkout
       - run:
-          name: Test de performance simple
-          command: |
-            echo "Lancement du test de performance..."
-            time npm run build || true  # Remplacez `build` par la tâche que vous souhaitez tester
+          name: Installation des dépendances
+          command: npm install
+      - lighthouse/audit:
+          url: "http://localhost:3000"  # URL du site à tester
+          settings: 
+            budget: 1000  # Le score de performance attendu en termes de millisecondes (vous pouvez ajuster selon vos besoins)
+      - store_artifacts:
+          path: ./lighthouse-report  # Stocke les résultats du test de performance
 
   simple-test:
     executor: node/default
@@ -117,12 +122,12 @@ workflows:
       - regression-tests:
           requires:
             - coverage
+      - performance-test:  # Intégration du test de performance
+          requires:
+            - regression-tests
       - simple-test:
           requires:
-            - regression-tests
-      - performance-test:
-          requires:
-            - regression-tests
+            - performance-test
 
   build-test-deploy:
     jobs:
@@ -136,38 +141,37 @@ workflows:
       - regression-tests:
           requires:
             - coverage
+      - performance-test:  # Ajout du test de performance avant le déploiement
+          requires:
+            - regression-tests
       - simple-test:
           requires:
-            - regression-tests
-      - performance-test:
-          requires:
-            - regression-tests
+            - performance-test
       - deploy_dev:
           requires:
-            - regression-tests
+            - performance-test
           filters:
             branches:
               only:
                 - develop
-                - /^feature.*/ 
-                - /^hotfix.*/  
+                - /^feature.*/  
       - deploy_integration:
           requires:
-            - regression-tests
+            - performance-test
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - regression-tests
+            - performance-test
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - regression-tests
+            - performance-test
           filters:
             branches:
               only:
