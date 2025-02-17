@@ -156,6 +156,23 @@ jobs:
       - checkout
       - run: echo "Deploying..."
 
+  verification_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Vérification simple
+          command: |
+            echo "Vérification simple en cours..."
+            # Vous pouvez ajouter des tests très simples, comme vérifier qu'un fichier existe ou une URL répond.
+            # Exemple de vérification : vérifier qu'un fichier index.html est présent
+            if [ -f "./index.html" ]; then
+              echo "Fichier index.html trouvé."
+            else
+              echo "Erreur : Fichier index.html manquant."
+              exit 1
+            fi
+
 workflows:
   version: 2
 
@@ -208,9 +225,12 @@ workflows:
       - deploy_application:  
           requires:
             - accessibility-test
-      - deploy_dev:
+      - verification_tests:  # Ajout du job de vérification avant le déploiement
           requires:
             - deploy_application
+      - deploy_dev:
+          requires:
+            - verification_tests
           filters:
             branches:
               only:
@@ -219,21 +239,21 @@ workflows:
                 - /^hotfix.*/
       - deploy_integration:
           requires:
-            - deploy_application
+            - verification_tests
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - deploy_application
+            - verification_tests
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - deploy_application
+            - verification_tests
           filters:
             branches:
               only:
