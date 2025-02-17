@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
-      - run:  
+      - run:
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
@@ -77,7 +77,6 @@ jobs:
       - run:
           name: Vérification des dépendances obsolètes
           command: npm outdated
-
 
   simple-test:
     executor: node/default
@@ -144,19 +143,19 @@ workflows:
             - build
       - coverage:
           requires:
-            - unit-tests
+            - build
       - regression-tests:
           requires:
-            - coverage
+            - build
       - security-check:
           requires:
-            - regression-tests
+            - build
       - compatibility-test:
           requires:
-            - security-check  # Ajout du test de compatibilité après les tests de sécurité
+            - build
       - simple-test:
           requires:
-            - compatibility-test
+            - build
       - deploy_dev:
           requires:
             - compatibility-test
