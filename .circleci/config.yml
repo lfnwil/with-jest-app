@@ -19,7 +19,7 @@ jobs:
           command: npm run clean
       - run:
           name: Construction du projet
-          command: npm run build
+          command: npm run build  # Assurez-vous que `next` est installé avant cette étape
       - run:
           name: Packaging
           command: |
