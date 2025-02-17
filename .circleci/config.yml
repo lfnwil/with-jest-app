@@ -187,19 +187,19 @@ workflows:
             - build
       - coverage:
           requires:
-            - unit-tests
+            - build
       - regression-test:
           requires:
-            - coverage
+            - build
       - security-check:
           requires:
-            - regression-test
+            - build
       - compatibility-test:
           requires:
-            - security-check
+            - build
       - accessibility-test:
           requires:
-            - compatibility-test
+            - build
 
   build-test-deploy:
     jobs:
