@@ -16,22 +16,19 @@ jobs:
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
       - run: echo "Building things..."
 
-  cleaning_and_packaging:
+  clean_and_package:
     executor: node/default
     steps:
       - checkout
       - run:
-          name: Nettoyage des fichiers temporaires
-          command: |
-            echo "Nettoyage des fichiers temporaires..."
-            rm -rf ./node_modules/.cache
-            rm -rf ./dist/*
+          name: Nettoyage des fichiers générés
+          command: rm -rf dist/*
       - run:
-          name: Packaging des fichiers nécessaires
-          command: |
-            echo "Packaging des fichiers..."
-            mkdir -p ./build-output
-            cp -r ./src/* ./build-output/
+          name: Création du package
+          command: npm run build
+      - run:
+          name: Vérification du package
+          command: ls -lh dist/
 
   unit-tests:
     executor: node/default
@@ -46,6 +43,19 @@ jobs:
       - run:
           name: Run tests
           command: npm run test:ci
+      - store_test_results:
+          path: ./test-results/
+
+  coverage:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run coverage tests
+          command: npm run test:coverage
       - store_test_results:
           path: ./test-results/
 
@@ -79,48 +89,54 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - cleaning_and_packaging:
+      - clean_and_package:
           requires:
             - build
       - unit-tests:
           requires:
-            - cleaning_and_packaging
+            - build
+      - coverage:
+          requires:
+            - unit-tests
 
   build-test-deploy:
     jobs:
       - build
-      - cleaning_and_packaging:
+      - clean_and_package:
           requires:
             - build
       - unit-tests:
           requires:
-            - cleaning_and_packaging
-      - deploy_dev:
+            - build
+      - coverage:
           requires:
             - unit-tests
+      - deploy_dev:
+          requires:
+            - coverage
           filters:
             branches:
               only:
                 - develop
-                - /^feature.*/
-                - /^hotfix.*/
+                - /^feature.*/ 
+                - /^hotfix.*/ 
       - deploy_integration:
           requires:
-            - unit-tests
+            - coverage
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - unit-tests
+            - coverage
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - unit-tests
+            - coverage
           filters:
             branches:
               only:
