@@ -11,12 +11,14 @@ jobs:
       - run:
           name: Installation des dépendances
           command: npm install
-      - run:  
+      - run:
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
-      - run: echo "Building things..."
+      - run:
+          name: Build du projet
+          command: npm run build
 
-    clean_and_package:
+  clean_and_package:
     executor: node/default
     steps:
       - checkout
@@ -36,12 +38,14 @@ jobs:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
       - run:
+          name: Installation des dépendances
+          command: npm install
+      - run:
+          name: Installation de jest-junit
           command: npm install jest-junit
       - run:
-          name: Run tests
+          name: Lancer les tests en mode CI
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
@@ -54,7 +58,7 @@ jobs:
           name: Install dependencies
           command: npm install
       - run:
-          name: Run coverage tests
+          name: Lancer les tests de couverture
           command: npm run test:coverage
       - store_test_results:
           path: ./test-results/
@@ -108,7 +112,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage  # Le simple-test dépend de la couverture
+            - coverage 
 
   build-test-deploy:
     jobs:
@@ -124,7 +128,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage
+            - coverage  
       - deploy_dev:
           requires:
             - coverage
