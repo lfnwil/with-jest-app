@@ -24,12 +24,6 @@ jobs:
           name: Nettoyage des fichiers générés
           command: rm -rf dist/*
       - run:
-          name: Installation des dépendances
-          command: npm install
-      - run:
-          name: Vérifier l'installation de Next.js
-          command: npx next --version 
-      - run:
           name: Création du package
           command: npm run build
       - run:
@@ -114,7 +108,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage  
+            - coverage  # Le simple-test dépend de la couverture
 
   build-test-deploy:
     jobs:
@@ -130,7 +124,7 @@ workflows:
             - unit-tests
       - simple-test:
           requires:
-            - coverage 
+            - coverage  # Le simple-test dépend de la couverture
       - deploy_dev:
           requires:
             - coverage
