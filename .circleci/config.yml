@@ -35,10 +35,6 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
-      - run:
-          name: Compatibility Test
-          command: npx check-package-compat  # Outil de test de compatibilité
-          # Remplacer par l'outil que tu utilises si nécessaire.
 
   coverage:
     executor: node/default
@@ -73,6 +69,15 @@ jobs:
       - run:
           name: Security audit of dependencies
           command: npm audit --production --audit-level=high
+
+  compatibility-test:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Test de compatibilité des dépendances
+          command: npx check-package-compat  # Exemple de commande pour tester la compatibilité
+          # Remplacer par l'outil que tu utilises pour tester la compatibilité des versions.
 
   simple-test:
     executor: node/default
@@ -124,9 +129,12 @@ workflows:
       - security-check:
           requires:
             - regression-tests
+      - compatibility-test:
+          requires:
+            - security-check  # Le test de compatibilité vient après la vérification de sécurité
       - simple-test:
           requires:
-            - security-check
+            - compatibility-test
 
   build-test-deploy:
     jobs:
@@ -143,12 +151,15 @@ workflows:
       - security-check:
           requires:
             - regression-tests
+      - compatibility-test:
+          requires:
+            - security-check  # Ajout du test de compatibilité après les tests de sécurité
       - simple-test:
           requires:
-            - security-check
+            - compatibility-test
       - deploy_dev:
           requires:
-            - security-check
+            - compatibility-test
           filters:
             branches:
               only:
@@ -157,21 +168,21 @@ workflows:
                 - /^hotfix.*/  
       - deploy_integration:
           requires:
-            - security-check
+            - compatibility-test
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - security-check
+            - compatibility-test
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - security-check
+            - compatibility-test
           filters:
             branches:
               only:
