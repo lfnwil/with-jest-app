@@ -67,11 +67,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Exécution du test de performance
-        command: 
-          echo "Démarrer le test de performance"
-          ab -n 1000 -c 100 http://example.com/
-          echo "Test de performance terminé"
+          name: Exécution du test de performance
+          command: |
+            echo "Démarrer le test de performance"
+            ab -n 1000 -c 100 http://example.com/
+            echo "Test de performance terminé"
 
   security-check:
     executor: node/default
@@ -155,7 +155,7 @@ workflows:
             - regression-tests
       - security-check:
           requires:
-            - performane-test
+            - performance-test
       - simple-test:
           requires:
             - security-check
@@ -166,7 +166,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /^feature.*/
+                - /^feature.*/ 
                 - /^hotfix.*/  
       - deploy_integration:
           requires:
