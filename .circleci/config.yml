@@ -126,6 +126,21 @@ jobs:
             # Par exemple, la mise à jour des configurations, la création des répertoires nécessaires, etc.
             echo "Configuration de l'environnement de déploiement terminée."
 
+  deploy_application:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Déploiement de l'application
+          command: |
+            echo "Déploiement de l'application..."
+            # Ajouter les étapes de déploiement spécifiques, telles que :
+            # - Copie des fichiers de l'application sur le serveur
+            # - Exécution des commandes de déploiement spécifiques
+            # Exemple : npm run deploy ou tout autre script de déploiement
+            npm run deploy
+            echo "Application déployée avec succès."
+
   deploy_dev:
     executor: node/default
     steps:
@@ -199,9 +214,12 @@ workflows:
       - prepare_deployment:  # Le job de préparation est ajouté ici
           requires:
             - accessibility-test
-      - deploy_dev:
+      - deploy_application:  # Le job de déploiement de l'application
           requires:
             - prepare_deployment
+      - deploy_dev:
+          requires:
+            - deploy_application
           filters:
             branches:
               only:
@@ -210,21 +228,21 @@ workflows:
                 - /^hotfix.*/
       - deploy_integration:
           requires:
-            - prepare_deployment
+            - deploy_application
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - prepare_deployment
+            - deploy_application
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - prepare_deployment
+            - deploy_application
           filters:
             branches:
               only:
