@@ -14,17 +14,13 @@ jobs:
       - run:  
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
+      - run:
+          name: Cleaning
+          command: rm -rf node_modules && npm cache clean --force
+      - run:
+          name: Packaging
+          command: npm run build
       - run: echo "Building things..."
-      - run:
-        name: Cleaning
-        command: |
-          echo "Suppression des fichiers temporaires..."
-          rm -rf ./tmp/*
-      - run:
-        name: Packaging
-        command: |
-          echo "Création du package..."
-          tar -czf build-package.tar.gz ./dist
 
   unit-tests:
     executor: node/default
