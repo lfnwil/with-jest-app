@@ -35,6 +35,13 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
+      # Étape de test de performance (Lighthouse)
+      - run:
+          name: Performance Test with Lighthouse
+          command: |
+            npm install -g lighthouse
+            lighthouse http://localhost:3000 --output html --output-path ./lighthouse-report.html
+          when: always
 
   coverage:
     executor: node/default
