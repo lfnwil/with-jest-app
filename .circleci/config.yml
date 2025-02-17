@@ -156,7 +156,7 @@ jobs:
       - checkout
       - run: echo "Deploying..."
 
-    functional_validation_tests:
+  functional_validation_tests:
     executor: node/default
     steps:
       - checkout
