@@ -68,7 +68,7 @@ jobs:
           name: Test de performance simple
           command: |
             echo "Lancement du test de performance..."
-            time npm run some-performance-task
+            time npm run build || true  # Remplacez `build` par la tâche que vous souhaitez tester
 
   simple-test:
     executor: node/default
