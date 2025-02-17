@@ -63,15 +63,15 @@ jobs:
           path: ./test-results/
 
   performance-test:
-    executor: node/default
-    steps:
-      - checkout
-      - run:
-          name: Install Apache Bench (ab)
+  executor: node/default
+  steps:
+    - checkout
+    - run:
+        name: Install Apache Bench (ab)
         command: |
           sudo apt-get update
           sudo apt-get install -y apache2-utils
-      - run:
+    - run:
         name: Exécution du test de performance
         command: |
           echo "Démarrer le test de performance"
