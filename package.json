@@ -7,7 +7,8 @@
     "test": "jest",
     "test:ci": "jest --ci",
     "test:coverage": "jest --coverage",
-    "test:regression": "jest --testPathPattern=regression --passWithNoTests"
+    "test:regression": "jest --testPathPattern=regression --passWithNoTests",
+    "some-performance-task": "node performace-test-script.js"
   },
   "dependencies": {
     "next": "latest",
