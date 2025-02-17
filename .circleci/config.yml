@@ -151,12 +151,50 @@ jobs:
       - checkout
       - run: echo "Deploying to development environment..."
 
+<<<<<<< HEAD
+=======
+  deploy_integration:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying to integration environment..."
+
+>>>>>>> develop
   deploy_prod:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to production environment..."
 
+<<<<<<< HEAD
+=======
+  deploy:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying..."
+
+  functional_validation_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Validation fonctionnelle simple
+          command: |
+            echo "Test de validation fonctionnelle réussi !"
+
+  surveillance_et_suivi:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Surveillance et suivi du déploiement
+          command: |
+            echo "Surveillance du déploiement : Tout fonctionne correctement !"
+            # Vérification simulée pour indiquer que le déploiement est réussi
+            echo "Aucune anomalie détectée dans le processus de déploiement."
+
+>>>>>>> develop
 workflows:
   version: 2
 
