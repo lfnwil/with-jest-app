@@ -35,13 +35,6 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
-      # Étape de test de performance (Lighthouse)
-      - run:
-          name: Performance Test with Lighthouse
-          command: |
-            npm install -g lighthouse
-            lighthouse http://localhost:3000 --output html --output-path ./lighthouse-report.html
-          when: always
 
   coverage:
     executor: node/default
@@ -68,6 +61,14 @@ jobs:
           command: npm run test:regression
       - store_test_results:
           path: ./test-results/
+
+  security-check:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Security audit of dependencies
+          command: npm audit --production --audit-level=high
 
   simple-test:
     executor: node/default
@@ -116,9 +117,12 @@ workflows:
       - regression-tests:
           requires:
             - coverage
-      - simple-test:
+      - security-check:
           requires:
             - regression-tests
+      - simple-test:
+          requires:
+            - security-check
 
   build-test-deploy:
     jobs:
@@ -132,12 +136,15 @@ workflows:
       - regression-tests:
           requires:
             - coverage
+      - security-check:
+          requires:
+            - regression-tests
       - simple-test:
           requires:
-            - regression-tests
+            - security-check
       - deploy_dev:
           requires:
-            - regression-tests
+            - security-check
           filters:
             branches:
               only:
@@ -146,21 +153,21 @@ workflows:
                 - /^hotfix.*/  
       - deploy_integration:
           requires:
-            - regression-tests
+            - security-check
           filters:
             branches:
               only:
                 - integration
       - deploy_prod:
           requires:
-            - regression-tests
+            - security-check
           filters:
             branches:
               only:
                 - main
       - deploy:
           requires:
-            - regression-tests
+            - security-check
           filters:
             branches:
               only:
