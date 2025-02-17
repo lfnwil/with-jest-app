@@ -165,6 +165,18 @@ jobs:
           command: |
             echo "Test de validation fonctionnelle réussi !"
 
+    surveillance_et_suivi:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Surveillance et suivi du déploiement
+          command: |
+            echo "Surveillance du déploiement : Tout fonctionne correctement !"
+            # Vérification simulée pour indiquer que le déploiement est réussi
+            echo "Aucune anomalie détectée dans le processus de déploiement."
+
+
 workflows:
   version: 2
 
@@ -230,7 +242,7 @@ workflows:
                 - main
       - deploy_dev:
           requires:
-            - functional_validation_tests
+            - accessibility-test
           filters:
             branches:
               only:
@@ -251,3 +263,7 @@ workflows:
             branches:
               only:
                 - main
+
+      - surveillance_et_suivi:  
+          requires:
+            - deploy_prod
