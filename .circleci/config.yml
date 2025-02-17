@@ -228,7 +228,7 @@ workflows:
             - accessibility-test
       - functional_validation_tests: 
           requires:
-            - daccessibility-test
+            - accessibility-test
       - deploy_dev:
           requires:
             - functional_validation_tests
