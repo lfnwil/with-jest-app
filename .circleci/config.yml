@@ -10,27 +10,25 @@ jobs:
       - checkout
       - run:
           name: Installation des dépendances
-          command: npm install --no-cache
-      - run:
-          name: Installation des dépendances
           command: npm install
-      - run:
+      - run:  
           name: Vérification de la syntaxe JavaScript
           command: find . -name "*.js" ! -path "./node_modules/*" ! -path "./dist/*" -print0 | xargs -0 -n1 node -c
+      - run: echo "Building things..."
+
+  clean_and_package:
+    executor: node/default
+    steps:
+      - checkout
       - run:
-          name: Nettoyage des fichiers temporaires
-          command: npm run clean
+          name: Nettoyage des fichiers générés
+          command: rm -rf dist/*
       - run:
-          name: Construction du projet
-          command: npm run build  # Assurez-vous que `next` est installé avant cette étape
+          name: Création du package
+          command: npm run build
       - run:
-          name: Packaging
-          command: |
-            if [ -d "dist" ]; then
-              tar -czf dist.tar.gz dist
-            else
-              echo "Le répertoire dist n'existe pas, aucun packaging effectué."
-            fi
+          name: Vérification du package
+          command: ls -lh dist/
 
   unit-tests:
     executor: node/default
@@ -78,6 +76,9 @@ workflows:
   build_and_test:
     jobs:
       - build
+      - clean_and_package:
+          requires:
+            - build
       - unit-tests:
           requires:
             - build
@@ -85,6 +86,9 @@ workflows:
   build-test-deploy:
     jobs:
       - build
+      - clean_and_package:
+          requires:
+            - build
       - unit-tests:
           requires:
             - build
@@ -96,7 +100,7 @@ workflows:
               only:
                 - develop
                 - /^feature.*/ 
-                - /^hotfix.*/
+                - /^hotfix.*/ 
       - deploy_integration:
           requires:
             - unit-tests
