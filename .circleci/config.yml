@@ -77,14 +77,17 @@ jobs:
       - run:
           name: Vérification des dépendances obsolètes
           command: npm outdated
-
-  simple-test:
-    executor: node/default
-    steps:
-      - checkout
       - run:
-          name: Vérification simple
-          command: echo "Simple test passed!"
+          name: Vérification de la compatibilité avec différentes versions de Node.js
+          command: |
+            nvm install 14
+            nvm install 16
+            nvm use 14
+            npm install
+            npm test
+            nvm use 16
+            npm install
+            npm test
 
   deploy_dev:
     executor: node/default
@@ -131,9 +134,6 @@ workflows:
       - compatibility-test:
           requires:
             - security-check
-      - simple-test:
-          requires:
-            - compatibility-test
 
   build-test-deploy:
     jobs:
@@ -151,9 +151,6 @@ workflows:
           requires:
             - build
       - compatibility-test:
-          requires:
-            - build
-      - simple-test:
           requires:
             - build
       - deploy_dev:
